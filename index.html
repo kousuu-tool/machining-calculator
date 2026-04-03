@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加工工数 かんたん計算ツール | 試作・量産の見積もりに</title>
+<meta name="description" content="素材サイズと材質を入力するだけで、旋盤・マシニングの加工工数をすぐに計算。設計エンジニアの工数見積もりを無料でサポート。">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F8FA;
+  --white: #FFFFFF;
+  --orange: #FF6B35;
+  --orange-light: #FF8C5A;
+  --orange-pale: #FFF0EB;
+  --orange-dark: #E55A25;
+  --navy: #1A2744;
+  --navy2: #2D3F6B;
+  --blue: #3B6FD4;
+  --text: #1A2744;
+  --text2: #5A6A8A;
+  --text3: #8A9AB8;
+  --border: #E2E8F5;
+  --rough: #EA580C;
+  --finish: #0891B2;
+  --success: #059669;
+  --warning: #D97706;
+  --danger: #DC2626;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(26,39,68,0.06);
+}
+.logo {
+  font-size: 17px; font-weight: 900; color: var(--navy);
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-badge {
+  background: var(--orange);
+  color: #fff; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px;
+}
+.header-cta {
+  background: var(--orange); color: #fff;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 13px; font-weight: 700;
+  border: none; border-radius: 6px;
+  padding: 8px 18px; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.header-cta:hover { background: var(--orange-dark); transform: translateY(-1px); }
+
+/* ===== HERO ===== */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 60%, #3B5998 100%);
+  color: #fff;
+  padding: 72px 24px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,107,53,0.2); border: 1px solid rgba(255,107,53,0.4);
+  color: #FFB494; font-size: 12px; font-weight: 700;
+  padding: 4px 14px; border-radius: 99px; letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 900; line-height: 1.2;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+.hero h1 span { color: var(--orange); }
+.hero-sub {
+  font-size: clamp(14px, 2vw, 18px);
+  color: rgba(255,255,255,0.75);
+  max-width: 560px; margin: 0 auto 32px;
+  line-height: 1.7;
+}
+.hero-cta-wrap { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-hero-main {
+  background: var(--orange); color: #fff;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 16px; font-weight: 700;
+  border: none; border-radius: 10px;
+  padding: 14px 36px; cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255,107,53,0.5);
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-hero-main:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,107,53,0.6); }
+.hero-note {
+  margin-top: 20px;
+  font-size: 12px; color: rgba(255,255,255,0.45);
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+}
+.hero-note span::before { content: '✓ '; color: rgba(255,255,255,0.6); }
+
+/* ===== STATS ===== */
+.stats-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 24px;
+  display: flex; justify-content: center;
+  gap: 48px; flex-wrap: wrap;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px; font-weight: 700; color: var(--orange);
+  line-height: 1;
+}
+.stat-label { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+/* ===== SECTION ===== */
+section { padding: 64px 24px; }
+.section-inner { max-width: 920px; margin: 0 auto; }
+.section-eyebrow {
+  font-size: 11px; font-weight: 700; color: var(--orange);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.section-title {
+  font-size: clamp(22px, 3.5vw, 34px);
+  font-weight: 900; line-height: 1.25;
+  margin-bottom: 12px; color: var(--navy);
+}
+.section-desc {
+  font-size: 15px; color: var(--text2);
+  max-width: 560px; line-height: 1.75;
+  margin-bottom: 40px;
+}
+
+/* ===== FEATURES ===== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.feature-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--orange);
+  opacity: 0; transition: opacity 0.2s;
+}
+.feature-card:hover { box-shadow: 0 8px 32px rgba(26,39,68,0.1); transform: translateY(-2px); }
+.feature-card:hover::before { opacity: 1; }
+.feature-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--orange-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 14px;
+}
+.feature-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--navy); }
+.feature-card p { font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+/* ===== HOW TO ===== */
+.howto-bg { background: var(--navy); }
+.howto-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px; margin-top: 40px;
+}
+.step-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 24px;
+  position: relative;
+}
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 40px; font-weight: 700;
+  color: var(--orange); opacity: 0.8;
+  line-height: 1; margin-bottom: 12px;
+}
+.step-card h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.step-card p { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.howto-bg .section-title { color: #fff; }
+.howto-bg .section-desc { color: rgba(255,255,255,0.6); }
+.howto-bg .section-eyebrow { color: #FFB494; }
+
+/* ===== TOOL EMBED ===== */
+.tool-section { background: var(--bg); }
+.tool-wrapper {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 40px rgba(26,39,68,0.08);
+}
+.tool-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  padding: 16px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.tool-header-dots { display: flex; gap: 6px; }
+.tool-header-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+}
+.tool-header-title {
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8);
+}
+.tool-header-badge {
+  margin-left: auto;
+  background: var(--orange); color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px;
+}
+.tool-body { padding: 24px; }
+
+/* ===== ツール本体のCSS ===== */
+:root {
+  --rough: #ea580c; --finish: #0891b2;
+  --text3: #94a3b8;
+}
+.card {
+  max-width: 100%; margin: 0 auto 14px;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 20px;
+}
+.card.rough-card { border-left: 4px solid var(--rough); }
+.card.finish-card { border-left: 4px solid var(--finish); }
+.card-title {
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.dot-blue { background: var(--blue); }
+.dot-rough { background: var(--rough); }
+.dot-finish { background: var(--finish); }
+.dot-result { background: linear-gradient(135deg, var(--orange), var(--orange-dark)); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+.field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+.field input, .field select {
+  width: 100%; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 14px; padding: 8px 10px; outline: none;
+  transition: border-color 0.2s;
+}
+.field input:focus, .field select:focus { border-color: var(--orange); }
+.field input[type="number"] { font-family: 'JetBrains Mono', monospace; }
+.vol-chip {
+  border-radius: 8px; padding: 8px 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+  white-space: nowrap;
+}
+.vol-chip .chip-label { font-size: 10px; font-family: 'Zen Kaku Gothic New',sans-serif; display: block; margin-bottom: 1px; font-weight: 400; color: var(--text2); }
+.vol-chip-blue   { background: rgba(59,111,212,0.08);  border: 1px solid rgba(59,111,212,0.2);  color: var(--blue); }
+.vol-chip-rough  { background: rgba(234,88,12,0.08);   border: 1px solid rgba(234,88,12,0.2);   color: var(--rough); }
+.vol-chip-finish { background: rgba(8,145,178,0.08);   border: 1px solid rgba(8,145,178,0.2);   color: var(--finish); }
+.condition-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ctag { font-size: 11px; padding: 3px 9px; border-radius: 5px; background: var(--bg); border: 1px solid var(--border); color: var(--text2); }
+.ctag b { color: var(--text); }
+.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 10px; margin-bottom: 14px; }
+.r-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.r-item .r-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+.r-item .r-val { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; }
+.r-item .r-sub  { font-size: 11px; color: var(--text2); margin-top: 2px; font-family: 'JetBrains Mono',monospace; }
+.r-item.r-rough  { border-color: var(--rough);  background: rgba(234,88,12,0.04); }
+.r-item.r-rough  .r-val { color: var(--rough); }
+.r-item.r-finish { border-color: var(--finish); background: rgba(8,145,178,0.04); }
+.r-item.r-finish .r-val { color: var(--finish); }
+.r-item.r-total  { border-color: var(--orange); background: rgba(255,107,53,0.05); }
+.r-item.r-total  .r-val { color: var(--orange); font-size: 24px; }
+.bar-wrap { margin-bottom: 10px; }
+.bar-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+.bar-bg { background: var(--border); border-radius: 99px; height: 7px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+.bar-rough-fill  { background: linear-gradient(to right, #fb923c, var(--rough)); }
+.bar-finish-fill { background: linear-gradient(to right, #22d3ee, var(--finish)); }
+.diff-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; margin-bottom: 12px; }
+.diff-easy { background: rgba(5,150,105,0.1);  color: #059669; }
+.diff-mid  { background: rgba(217,119,6,0.1);  color: #d97706; }
+.diff-hard { background: rgba(220,38,38,0.1);  color: #dc2626; }
+.empty-result { color: var(--text3); font-size: 13px; padding: 6px 0; }
+.calc-note { font-size: 11px; color: var(--text3); line-height: 1.7; margin-top: 10px; padding: 8px 12px; background: var(--bg); border-radius: 8px; border-left: 3px solid var(--border); }
+.warn-msg { display:none; background: rgba(217,119,6,0.1); border: 1px solid rgba(217,119,6,0.3); border-radius: 8px; padding: 10px 14px; color: #d97706; font-size: 12px; font-weight: 500; margin-top: 8px; }
+
+/* ===== FAQ ===== */
+.faq-list { max-width: 680px; margin: 0 auto; }
+.faq-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.faq-q {
+  padding: 16px 20px; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; color: var(--navy);
+  transition: background 0.15s;
+}
+.faq-q:hover { background: var(--bg); }
+.faq-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--orange-pale); color: var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.faq-a {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.faq-a-inner {
+  padding: 0 20px 16px;
+  font-size: 13px; color: var(--text2); line-height: 1.75;
+}
+.faq-item.open .faq-a { max-height: 300px; }
+.faq-item.open .faq-icon { transform: rotate(45deg); }
+
+/* ===== AD AREA ===== */
+.ad-area {
+  background: var(--white);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 12px;
+  min-height: 100px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 6px;
+}
+.ad-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.5);
+  padding: 28px 24px;
+  text-align: center;
+  font-size: 12px;
+}
+footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+footer a:hover { color: rgba(255,255,255,0.8); }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero > * { animation: fadeUp 0.6s ease both; }
+.hero > *:nth-child(1) { animation-delay: 0.05s; }
+.hero > *:nth-child(2) { animation-delay: 0.15s; }
+.hero > *:nth-child(3) { animation-delay: 0.25s; }
+.hero > *:nth-child(4) { animation-delay: 0.35s; }
+.hero > *:nth-child(5) { animation-delay: 0.42s; }
+
+@media(max-width:600px){
+  .grid4 { grid-template-columns: 1fr 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+  .stats-bar { gap: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    ⚙️ 加工工数 計算ツール
+    <span class="logo-badge">FREE</span>
+  </div>
+  <button class="header-cta" onclick="document.getElementById('tool-section').scrollIntoView({behavior:'smooth'})">
+    今すぐ計算する →
+  </button>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">🔧 設計エンジニア・調達担当者向け 無料ツール</div>
+  <h1>加工工数、<span>3入力</span>で<br>すぐわかる。</h1>
+  <p class="hero-sub">素材サイズ・材質・完成品体積を入力するだけ。旋盤・マシニングの工数を即時に概算。試作品の見積もり判断がスピードアップ。</p>
+  <div class="hero-cta-wrap">
+    <button class="btn-hero-main" onclick="document.getElementById('tool-section').scrollIntoView({behavior:'smooth'})">
+      ⚡ 無料で今すぐ計算する
+    </button>
+  </div>
+  <p class="hero-note">
+    <span>登録不要</span>
+    <span>完全無料</span>
+    <span>6材質対応</span>
+  </p>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">6</div>
+    <div class="stat-label">対応材質</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">3</div>
+    <div class="stat-label">加工方法</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0.5h</div>
+    <div class="stat-label">単位で算出</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">無料</div>
+    <div class="stat-label">完全無料・登録不要</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section style="background:var(--white); padding: 64px 24px;">
+  <div class="section-inner">
+    <div class="section-eyebrow">FEATURES</div>
+    <h2 class="section-title">こんな悩みを解決します</h2>
+    <p class="section-desc">試作・量産の検討段階で「この加工、どのくらいコストかかる？」という疑問にすばやく答えます。</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <h3>荒加工・仕上げを分けて計算</h3>
+        <p>取り代と仕上げ切り込みを分離して工数を算出。より現実に近い工数を概算できます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔩</div>
+        <h3>6材質・3加工方法に対応</h3>
+        <p>アルミ・A7075・鉄・SUS304・SUS630 H900・インコネルに対応。旋盤・3軸・5軸マシニングの切削条件を自動設定。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📐</div>
+        <h3>角材・丸材どちらも入力OK</h3>
+        <p>X×Y×Zの角材入力と、φ×Lの丸材入力を切り替え可能。完成品体積はCADから直接入力も、サイズ入力からの自動計算も対応。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛠️</div>
+        <h3>工具径・工具種類も選択可能</h3>
+        <p>フラットエンドミル・ボールエンドミルの切り替えと工具径の指定で、実態に近い切削条件で計算。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AD AREA TOP -->
+<div style="max-width:920px;margin:0 auto;padding:8px 24px;">
+  <div class="ad-area">
+    <div class="ad-label">Advertisement</div>
+    <div>広告エリア（Google AdSense）</div>
+  </div>
+</div>
+
+<!-- HOW TO -->
+<section class="howto-bg">
+  <div class="section-inner">
+    <div class="section-eyebrow">HOW TO USE</div>
+    <h2 class="section-title">使い方は3ステップ</h2>
+    <p class="section-desc">難しい操作は不要。素材情報を入力するだけで、すぐに工数の目安がわかります。</p>
+    <div class="howto-steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h3>素材サイズを入力</h3>
+        <p>角材（X×Y×Z）または丸材（φ×L）のサイズを入力。素材体積が自動計算されます。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h3>材質・加工方法を選択</h3>
+        <p>6材質から選択し、旋盤・3軸・5軸マシニングから加工方法を選びます。切削条件は自動設定。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h3>完成品体積を入力</h3>
+        <p>CADから体積をmm³で直接入力、または完成品のサイズから自動計算。すぐに工数が表示されます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOL EMBED -->
+<section class="tool-section" id="tool-section">
+  <div class="section-inner" style="max-width:860px;">
+    <div class="section-eyebrow">FREE TOOL</div>
+    <h2 class="section-title">加工工数 計算ツール</h2>
+    <p class="section-desc">以下のフォームに入力してください。結果はリアルタイムで表示されます。</p>
+
+    <div class="tool-wrapper">
+      <div class="tool-header">
+        <div class="tool-header-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="tool-header-title">⚙️ 加工工数 かんたん計算ツール</div>
+        <div class="tool-header-badge">FREE</div>
+      </div>
+      <div class="tool-body">
+
+        <!-- 素材サイズ -->
+        <div class="card">
+          <div class="card-title"><span class="dot dot-blue"></span>素材サイズ（切削前）
+            <div style="display:flex;gap:6px;margin-left:auto;">
+              <button id="btnSquare" onclick="setShape('square')" style="font-size:11px;font-weight:700;padding:3px 11px;border-radius:6px;border:1px solid var(--orange);background:var(--orange);color:#fff;cursor:pointer;">□ 角材</button>
+              <button id="btnRound"  onclick="setShape('round')"  style="font-size:11px;font-weight:700;padding:3px 11px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;">○ 丸材</button>
+            </div>
+          </div>
+          <div id="squareInput" class="grid4">
+            <div class="field"><label>X 幅 (mm)</label><input type="number" id="sx" placeholder="100" min="0" oninput="calc()"></div>
+            <div class="field"><label>Y 奥行き (mm)</label><input type="number" id="sy" placeholder="100" min="0" oninput="calc()"></div>
+            <div class="field"><label>Z 高さ (mm)</label><input type="number" id="sz" placeholder="50" min="0" oninput="calc()"></div>
+            <div class="vol-chip vol-chip-blue"><span class="chip-label">素材体積</span><span id="rawVol">—</span></div>
+          </div>
+          <div id="roundInput" style="display:none;" class="grid4">
+            <div class="field"><label>φ 直径 (mm)</label><input type="number" id="rd" placeholder="50" min="0" oninput="calc()"></div>
+            <div class="field" style="grid-column:span 2"><label>L 長さ (mm)</label><input type="number" id="rl" placeholder="100" min="0" oninput="calc()"></div>
+            <div class="vol-chip vol-chip-blue"><span class="chip-label">素材体積</span><span id="rawVol2">—</span></div>
+          </div>
+        </div>
+
+        <!-- 材質・加工方法 -->
+        <div class="card">
+          <div class="card-title"><span class="dot dot-blue"></span>材質・加工方法</div>
+          <div class="grid2">
+            <div class="field"><label>材質</label>
+              <select id="material" onchange="onMethodChange()">
+                <option value="alum">アルミ（A2017/A5052等）</option>
+                <option value="a7075">A7075（超々ジュラルミン）</option>
+                <option value="iron" selected>鉄・鋼系（S45C等）</option>
+                <option value="sus">ステンレス（SUS304等）</option>
+                <option value="sus630">SUS630 H900（析出硬化系）</option>
+                <option value="inconel">インコネル（625/718等）</option>
+              </select>
+            </div>
+            <div class="field"><label>加工方法</label>
+              <select id="method" onchange="onMethodChange()">
+                <option value="mill3">マシニング（3軸）</option>
+                <option value="mill5">マシニング（5軸）</option>
+                <option value="lathe">旋盤加工</option>
+              </select>
+            </div>
+          </div>
+          <!-- 工具選択 -->
+          <div id="toolSection" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+            <div class="grid2">
+              <div class="field">
+                <label>工具種類</label>
+                <div style="display:flex;gap:8px;margin-top:2px;">
+                  <button id="btnFlat" onclick="setTool('flat')" style="flex:1;font-size:12px;font-weight:700;padding:7px;border-radius:6px;border:1px solid var(--orange);background:var(--orange);color:#fff;cursor:pointer;">⬛ フラット</button>
+                  <button id="btnBall" onclick="setTool('ball')" style="flex:1;font-size:12px;font-weight:700;padding:7px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;">⚫ ボール</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>工具径 φ (mm)</label>
+                <input type="number" id="toolDia" value="10" min="1" step="1" oninput="calc()" style="font-family:'JetBrains Mono',monospace;">
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px;">ae = 工具径 × <span id="aeCoef">0.6</span>（フラット:×0.6 / ボール:×0.3）</div>
+          </div>
+        </div>
+
+        <!-- 荒加工 -->
+        <div class="card rough-card">
+          <div class="card-title"><span class="dot dot-rough"></span>荒加工（取り代）</div>
+          <div id="roughSquare">
+            <div class="grid4">
+              <div class="field"><label>X 取り代 (mm) 片側</label><input type="number" id="rax" value="0.3" min="0" step="0.1" oninput="calc()"></div>
+              <div class="field"><label>Y 取り代 (mm) 片側</label><input type="number" id="ray" value="0.3" min="0" step="0.1" oninput="calc()"></div>
+              <div class="field"><label>Z 取り代 (mm) 片側</label><input type="number" id="raz" value="0.3" min="0" step="0.1" oninput="calc()"></div>
+              <div class="vol-chip vol-chip-rough"><span class="chip-label">荒除去体積</span><span id="roughRemove">—</span></div>
+            </div>
+          </div>
+          <div id="roughRound" style="display:none">
+            <div class="grid4">
+              <div class="field"><label>径方向 取り代 (mm)</label><input type="number" id="rrad" value="0.3" min="0" step="0.1" oninput="calc()"></div>
+              <div class="field" style="grid-column:span 2"><label>端面 取り代 (mm)</label><input type="number" id="rface" value="0.2" min="0" step="0.1" oninput="calc()"></div>
+              <div class="vol-chip vol-chip-rough"><span class="chip-label">荒除去体積</span><span id="roughRemove2">—</span></div>
+            </div>
+          </div>
+          <div class="condition-tags" id="roughTags"></div>
+        </div>
+
+        <!-- 仕上げ -->
+        <div class="card finish-card">
+          <div class="card-title"><span class="dot dot-finish"></span>仕上げ加工
+            <div style="display:flex;gap:4px;margin-left:auto;">
+              <button id="btnFinCad"    onclick="setFinMode('cad')"    style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:5px;border:1px solid var(--finish);background:var(--finish);color:#fff;cursor:pointer;">CAD入力</button>
+              <button id="btnFinSquare" onclick="setFinMode('square')" style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;">□ 角材</button>
+              <button id="btnFinRound"  onclick="setFinMode('round')"  style="font-size:10px;font-weight:700;padding:2px 9px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;">○ 丸材</button>
+            </div>
+          </div>
+          <!-- CADモード -->
+          <div id="finModeCad" class="grid4" style="margin-bottom:10px;">
+            <div class="field" style="grid-column:span 3">
+              <label>完成品体積 mm³（CADで確認・例: 9.925E+05 → 992500）</label>
+              <input type="number" id="finVol" placeholder="例: 450000" min="0" oninput="calc()">
+            </div>
+            <div class="vol-chip vol-chip-finish"><span class="chip-label">仕上げ除去体積</span><span id="finRemove">—</span></div>
+          </div>
+          <!-- 角材モード -->
+          <div id="finModeSquare" style="display:none;margin-bottom:10px;">
+            <div class="grid4">
+              <div class="field"><label>X 幅 (mm)</label><input type="number" id="fsx" placeholder="90" min="0" oninput="calcFinVol()"></div>
+              <div class="field"><label>Y 奥行き (mm)</label><input type="number" id="fsy" placeholder="90" min="0" oninput="calcFinVol()"></div>
+              <div class="field"><label>Z 高さ (mm)</label><input type="number" id="fsz" placeholder="45" min="0" oninput="calcFinVol()"></div>
+              <div class="vol-chip vol-chip-finish"><span class="chip-label">完成品体積</span><span id="finVolDisp">—</span></div>
+            </div>
+            <div class="grid4" style="margin-top:8px;">
+              <div style="grid-column:span 3"></div>
+              <div class="vol-chip vol-chip-finish"><span class="chip-label">仕上げ除去体積</span><span id="finRemove2">—</span></div>
+            </div>
+          </div>
+          <!-- 丸材モード -->
+          <div id="finModeRound" style="display:none;margin-bottom:10px;">
+            <div class="grid4">
+              <div class="field"><label>φ 外径 (mm)</label><input type="number" id="frd" placeholder="45" min="0" oninput="calcFinVol()"></div>
+              <div class="field"><label>φ 内径 (mm) ※0=中実</label><input type="number" id="frid" placeholder="0" min="0" value="0" oninput="calcFinVol()"></div>
+              <div class="field"><label>L 長さ (mm)</label><input type="number" id="frl" placeholder="90" min="0" oninput="calcFinVol()"></div>
+              <div class="vol-chip vol-chip-finish"><span class="chip-label">完成品体積</span><span id="finVolDisp2">—</span></div>
+            </div>
+            <div class="grid4" style="margin-top:8px;">
+              <div style="grid-column:span 3"></div>
+              <div class="vol-chip vol-chip-finish"><span class="chip-label">仕上げ除去体積</span><span id="finRemove3">—</span></div>
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>仕上げ切り込み ap (mm)</label><input type="number" id="finAp" value="0.5" min="0.01" step="0.1" oninput="calc()"></div>
+            <div class="field"><label>送り速度 (mm/min) ※空欄で自動</label><input type="number" id="finFeed" placeholder="自動" min="1" step="10" oninput="calc()"></div>
+          </div>
+          <div class="condition-tags" id="finishTags"></div>
+        </div>
+
+        <!-- 結果 -->
+        <div class="card" style="border-color:var(--orange);background:rgba(255,107,53,0.02);">
+          <div class="card-title"><span class="dot dot-result"></span>推定結果</div>
+          <div class="empty-result" id="noResult">素材サイズと完成品体積を入力すると工数が表示されます</div>
+          <div class="warn-msg" id="warnMsg"></div>
+          <div id="resultBody" style="display:none">
+            <div class="bar-wrap">
+              <div class="bar-label"><span>荒加工 除去率</span><span id="roughPctLbl">—</span></div>
+              <div class="bar-bg"><div class="bar-fill bar-rough-fill" id="roughBar" style="width:0%"></div></div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-label"><span>仕上げ 除去率</span><span id="finPctLbl">—</span></div>
+              <div class="bar-bg"><div class="bar-fill bar-finish-fill" id="finBar" style="width:0%"></div></div>
+            </div>
+            <div id="diffBadge" class="diff-badge diff-mid">標準加工</div>
+            <div class="result-grid">
+              <div class="r-item r-rough">
+                <div class="r-label">荒加工 推定工数</div>
+                <div class="r-val"><span id="r-rough">—</span></div>
+                <div class="r-sub"><span id="r-rough-min"></span></div>
+              </div>
+              <div class="r-item r-finish">
+                <div class="r-label">仕上げ 推定工数</div>
+                <div class="r-val"><span id="r-finish">—</span></div>
+                <div class="r-sub"><span id="r-finish-min"></span></div>
+              </div>
+              <div class="r-item r-total">
+                <div class="r-label">合計工数（0.5h単位）</div>
+                <div class="r-val"><span id="r-total">—</span></div>
+                <div class="r-sub"><span id="r-total-min"></span></div>
+              </div>
+            </div>
+            <div class="calc-note" id="condNote"></div>
+          </div>
+        </div>
+
+      </div><!-- /tool-body -->
+    </div><!-- /tool-wrapper -->
+  </div>
+</section>
+
+<!-- AD AREA MIDDLE -->
+<div style="max-width:860px;margin:0 auto;padding:8px 24px;">
+  <div class="ad-area">
+    <div class="ad-label">Advertisement</div>
+    <div>広告エリア（Google AdSense）</div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section style="background:var(--white);">
+  <div class="section-inner">
+    <div class="section-eyebrow">FAQ</div>
+    <h2 class="section-title">よくある質問</h2>
+    <p class="section-desc">ツールの使い方や計算の仕組みについて、よく寄せられる質問にお答えします。</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          完全無料で使えますか？
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">はい、完全無料でご利用いただけます。会員登録やメールアドレスの入力も不要です。ブラウザ上で動作するため、アプリのインストールも不要です。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          計算結果はどのくらい正確ですか？
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">あくまで概算ツールです。実際の加工時間は形状の複雑さ・工具の状態・機械剛性・段取り時間などによって大きく変わります。目安として「10時間オーダーか1時間オーダーか」の判断にご活用ください。正確な見積もりには加工業者への問い合わせをお勧めします。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          完成品体積はどうやって確認しますか？
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Fusion 360の場合、左パネルの「ボディ」フォルダを展開→ボディ名を右クリック→プロパティから体積（mm³）を確認できます。例えば「9.925E+05 mm³」と表示された場合、入力値は「992500」となります。CADがない場合は外形サイズからの計算モードもご利用いただけます。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          対応していない材質・加工方法はありますか？
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">現在、アルミ・A7075・鉄鋼系・SUS304・SUS630 H900・インコネルの6材質、旋盤・3軸マシニング・5軸マシニングの3加工方法に対応しています。樹脂・チタン・研削加工などは今後対応予定です。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          段取り時間は含まれますか？
+          <span class="faq-icon">+</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">含まれません。本ツールは純粋な切削加工時間の概算を計算しています。段取り・プログラム作成・工具交換・検査などの時間は別途加算してご検討ください。試作品の場合、一般的に段取り時間が全工数の30〜50%を占めることが多いです。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AD AREA BOTTOM -->
+<div style="max-width:860px;margin:0 auto;padding:8px 24px 32px;">
+  <div class="ad-area">
+    <div class="ad-label">Advertisement</div>
+    <div>広告エリア（Google AdSense）</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p style="margin-bottom:8px;">加工工数 かんたん計算ツール</p>
+  <p>© 2026 加工工数計算ツール — 本ツールの計算結果は概算値です。実際の加工工数は諸条件により異なります。</p>
+</footer>
+
+<script>
+// ===== FAQ =====
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+// ===== 工数計算ロジック =====
+window._shape   = 'square';
+window._tool    = 'flat';
+window._finMode = 'cad';
+
+function setShape(s) {
+  window._shape = s;
+  document.getElementById('squareInput').style.display = s==='square' ? '' : 'none';
+  document.getElementById('roundInput').style.display  = s==='round'  ? '' : 'none';
+  document.getElementById('roughSquare').style.display = s==='square' ? '' : 'none';
+  document.getElementById('roughRound').style.display  = s==='round'  ? '' : 'none';
+  const bS = document.getElementById('btnSquare');
+  const bR = document.getElementById('btnRound');
+  bS.style.background  = s==='square' ? 'var(--orange)'  : 'var(--bg)';
+  bS.style.color       = s==='square' ? '#fff'           : 'var(--text2)';
+  bS.style.borderColor = s==='square' ? 'var(--orange)'  : 'var(--border)';
+  bR.style.background  = s==='round'  ? 'var(--finish)'  : 'var(--bg)';
+  bR.style.color       = s==='round'  ? '#fff'           : 'var(--text2)';
+  bR.style.borderColor = s==='round'  ? 'var(--finish)'  : 'var(--border)';
+  const mth = document.getElementById('method');
+  if (s==='round') { mth.value='lathe'; document.getElementById('toolSection').style.display='none'; }
+  else { if(mth.value==='lathe') mth.value='mill3'; document.getElementById('toolSection').style.display=''; }
+  calc();
+}
+
+function setTool(t) {
+  window._tool = t;
+  const bF = document.getElementById('btnFlat');
+  const bB = document.getElementById('btnBall');
+  bF.style.background  = t==='flat' ? 'var(--orange)'  : 'var(--bg)';
+  bF.style.color       = t==='flat' ? '#fff'           : 'var(--text2)';
+  bF.style.borderColor = t==='flat' ? 'var(--orange)'  : 'var(--border)';
+  bB.style.background  = t==='ball' ? 'var(--finish)'  : 'var(--bg)';
+  bB.style.color       = t==='ball' ? '#fff'           : 'var(--text2)';
+  bB.style.borderColor = t==='ball' ? 'var(--finish)'  : 'var(--border)';
+  document.getElementById('aeCoef').textContent = t==='flat' ? '0.6' : '0.3';
+  calc();
+}
+
+function onMethodChange() {
+  const mth = document.getElementById('method').value;
+  document.getElementById('toolSection').style.display = mth==='lathe' ? 'none' : '';
+  calc();
+}
+
+function setFinMode(mode) {
+  window._finMode = mode;
+  document.getElementById('finModeCad').style.display    = mode==='cad'    ? '' : 'none';
+  document.getElementById('finModeSquare').style.display = mode==='square' ? '' : 'none';
+  document.getElementById('finModeRound').style.display  = mode==='round'  ? '' : 'none';
+  ['btnFinCad','btnFinSquare','btnFinRound'].forEach(id => {
+    const b = document.getElementById(id);
+    b.style.background  = 'var(--bg)';
+    b.style.color       = 'var(--text2)';
+    b.style.borderColor = 'var(--border)';
+  });
+  const active = mode==='cad' ? 'btnFinCad' : mode==='square' ? 'btnFinSquare' : 'btnFinRound';
+  document.getElementById(active).style.background  = 'var(--finish)';
+  document.getElementById(active).style.color       = '#fff';
+  document.getElementById(active).style.borderColor = 'var(--finish)';
+  calcFinVol();
+}
+
+function calcFinVol() {
+  const mode = window._finMode || 'cad';
+  let vol = 0;
+  if (mode === 'square') {
+    const fsx = parseFloat(document.getElementById('fsx').value)||0;
+    const fsy = parseFloat(document.getElementById('fsy').value)||0;
+    const fsz = parseFloat(document.getElementById('fsz').value)||0;
+    vol = fsx * fsy * fsz;
+    document.getElementById('finVolDisp').textContent = fmtVol(vol);
+  } else if (mode === 'round') {
+    const frd  = parseFloat(document.getElementById('frd').value)||0;
+    const frid = parseFloat(document.getElementById('frid').value)||0;
+    const frl  = parseFloat(document.getElementById('frl').value)||0;
+    vol = Math.max(0, Math.PI * frl * (Math.pow(frd/2,2) - Math.pow(frid/2,2)));
+    document.getElementById('finVolDisp2').textContent = fmtVol(vol);
+  }
+  calc();
+}
+
+const CONDITIONS = {
+  alum:    { mill3:{ap:3,ae:6,f:600},   mill5:{ap:2.5,ae:6,f:500},   lathe:{ap:3,vc:250,fr:0.3}  },
+  a7075:   { mill3:{ap:2,ae:6,f:500},   mill5:{ap:1.5,ae:6,f:450},   lathe:{ap:2,vc:200,fr:0.25} },
+  iron:    { mill3:{ap:3,ae:6,f:300},   mill5:{ap:2.5,ae:6,f:250},   lathe:{ap:2,vc:200,fr:0.25} },
+  sus:     { mill3:{ap:2,ae:6,f:200},   mill5:{ap:1.5,ae:6,f:180},   lathe:{ap:1.5,vc:100,fr:0.2}},
+  sus630:  { mill3:{ap:1,ae:3,f:120},   mill5:{ap:0.8,ae:2.5,f:100}, lathe:{ap:1,vc:80,fr:0.15}  },
+  inconel: { mill3:{ap:0.5,ae:2,f:60},  mill5:{ap:0.5,ae:1.5,f:55},  lathe:{ap:1.5,vc:35,fr:0.08}},
+};
+
+function removalRate(cond, diameter) {
+  if (cond.ae) return cond.ap * cond.ae * cond.f;
+  if (cond.vc !== undefined) return cond.vc * 1000 * cond.fr * cond.ap;
+  return cond.ap * cond.f * 3;
+}
+
+function fmtVol(v) {
+  if (!v||v<=0) return '—';
+  if (v>=1e6) return (v/1e6).toFixed(2)+' ×10⁶';
+  if (v>=1e3) return (v/1e3).toFixed(1)+' ×10³';
+  return v.toFixed(0);
+}
+
+function fmtTime(h) {
+  if (h<=0) return '0分';
+  const m = Math.round(h*60);
+  if (m<60) return m+'分';
+  const hr = Math.floor(m/60), mn = m%60;
+  return mn>0 ? hr+'h '+mn+'分' : hr+'h';
+}
+
+function materialLabel(m) {
+  return {alum:'アルミ',iron:'鉄・鋼系',sus:'SUS304',a7075:'A7075',sus630:'SUS630 H900',inconel:'インコネル'}[m];
+}
+function methodLabel(m) {
+  return {mill3:'マシニング3軸',mill5:'マシニング5軸',lathe:'旋盤'}[m];
+}
+
+function calc() {
+  const sx = parseFloat(document.getElementById('sx').value)||0;
+  const sy = parseFloat(document.getElementById('sy').value)||0;
+  const sz = parseFloat(document.getElementById('sz').value)||0;
+  const rax   = parseFloat(document.getElementById('rax').value)||0;
+  const ray   = parseFloat(document.getElementById('ray').value)||0;
+  const raz   = parseFloat(document.getElementById('raz').value)||0;
+  const rrad  = parseFloat(document.getElementById('rrad').value)||0;
+  const rface = parseFloat(document.getElementById('rface').value)||0;
+  const mat   = document.getElementById('material').value;
+  const mth   = document.getElementById('method').value;
+  const shape = window._shape || 'square';
+  const finMode = window._finMode || 'cad';
+
+  // 素材体積
+  let rawVol = 0;
+  if (shape==='square') {
+    rawVol = sx*sy*sz;
+    document.getElementById('rawVol').textContent = fmtVol(rawVol);
+  } else {
+    const rd = parseFloat(document.getElementById('rd').value)||0;
+    const rl = parseFloat(document.getElementById('rl').value)||0;
+    rawVol = Math.PI*(rd/2)**2*rl;
+    document.getElementById('rawVol2').textContent = fmtVol(rawVol);
+  }
+
+  // 完成品体積
+  let finVol = 0;
+  if (finMode==='cad') {
+    finVol = parseFloat(document.getElementById('finVol').value)||0;
+  } else if (finMode==='square') {
+    const fsx=parseFloat(document.getElementById('fsx').value)||0;
+    const fsy=parseFloat(document.getElementById('fsy').value)||0;
+    const fsz=parseFloat(document.getElementById('fsz').value)||0;
+    finVol = fsx*fsy*fsz;
+  } else {
+    const frd =parseFloat(document.getElementById('frd').value)||0;
+    const frid=parseFloat(document.getElementById('frid').value)||0;
+    const frl =parseFloat(document.getElementById('frl').value)||0;
+    finVol = Math.max(0, Math.PI*frl*((frd/2)**2-(frid/2)**2));
+  }
+
+  // 荒加工・仕上げ除去体積
+  const totalRemove = Math.max(0, rawVol - finVol);
+  let finRemove = 0;
+  if (shape==='square') {
+    const surface = 2*(sx*sy+sy*sz+sx*sz);
+    finRemove = Math.min(surface*((rax+ray+raz)/3), totalRemove);
+  } else {
+    const rd=parseFloat(document.getElementById('rd').value)||0;
+    const rl=parseFloat(document.getElementById('rl').value)||0;
+    const surface = Math.PI*rd*rl + 2*Math.PI*(rd/2)**2;
+    finRemove = Math.min(surface*((rrad+rface)/2), totalRemove);
+  }
+  const roughRemove = totalRemove - finRemove;
+
+  // 表示更新
+  if (shape==='square') document.getElementById('roughRemove').textContent = fmtVol(roughRemove);
+  else document.getElementById('roughRemove2').textContent = fmtVol(roughRemove);
+  if (finMode==='cad')    document.getElementById('finRemove').textContent  = fmtVol(finRemove);
+  else if(finMode==='square') document.getElementById('finRemove2').textContent = fmtVol(finRemove);
+  else document.getElementById('finRemove3').textContent = fmtVol(finRemove);
+
+  const noResult = document.getElementById('noResult');
+  const warnMsg  = document.getElementById('warnMsg');
+  const resultBody = document.getElementById('resultBody');
+
+  if (rawVol===0) {
+    noResult.style.display='block'; noResult.style.color='var(--text3)';
+    noResult.textContent='素材サイズと完成品体積を入力すると工数が表示されます';
+    warnMsg.style.display='none'; resultBody.style.display='none'; return;
+  }
+  if (finVol===0) {
+    noResult.style.display='block'; noResult.style.color='var(--warning)';
+    noResult.textContent='⚠️ 完成品体積を入力してください';
+    warnMsg.style.display='none'; resultBody.style.display='none'; return;
+  }
+  noResult.style.display='none'; warnMsg.style.display='none';
+  resultBody.style.display='block';
+
+  const cond = {...CONDITIONS[mat][mth]};
+  const diameter = shape==='round' ? (parseFloat(document.getElementById('rd').value)||50) : 50;
+
+  if (mth!=='lathe' && !['sus630','inconel'].includes(mat)) {
+    const toolDia  = parseFloat(document.getElementById('toolDia').value)||10;
+    const aeCoef   = (window._tool==='flat') ? 0.6 : 0.3;
+    cond.ae = toolDia * aeCoef;
+  }
+
+  const roughRate = removalRate(cond, diameter);
+  const finAp = parseFloat(document.getElementById('finAp').value)||0.5;
+  const finFeedInput = parseFloat(document.getElementById('finFeed').value)||0;
+  const finFeed = finFeedInput>0 ? finFeedInput : (cond.f||cond.vc*10||100)*0.4;
+  let finAe = cond.ae||6;
+  if (mth!=='lathe' && !['sus630','inconel'].includes(mat)) {
+    finAe = (parseFloat(document.getElementById('toolDia').value)||10) * ((window._tool==='flat')?0.6:0.3);
+  }
+  const finCond = cond.vc!==undefined
+    ? {...cond, ap:finAp, fr:cond.fr*0.5, vc:cond.vc*0.8}
+    : {...cond, ap:finAp, ae:finAe, f:finFeed};
+  const finRate = removalRate(finCond, diameter);
+
+  const avgAllowance = shape==='square' ? ((rax+ray+raz)/3) : ((rrad+rface)/2);
+  const passes = avgAllowance>0 ? Math.max(1,Math.ceil(avgAllowance/finAp)) : 1;
+
+  const roughH = roughRemove>0 ? roughRemove/roughRate/60 : 0;
+  const finH   = finRemove>0   ? finRemove/finRate/60     : 0;
+  const totalH = roughH+finH;
+  const totalCeil = Math.ceil(totalH*2)/2;
+
+  const roughPct = rawVol>0 ? roughRemove/rawVol*100 : 0;
+  const finPct   = rawVol>0 ? finRemove/rawVol*100   : 0;
+  const totalPct = rawVol>0 ? totalRemove/rawVol*100  : 0;
+
+  document.getElementById('roughBar').style.width    = Math.min(roughPct,100)+'%';
+  document.getElementById('finBar').style.width      = Math.min(finPct,100)+'%';
+  document.getElementById('roughPctLbl').textContent = roughPct.toFixed(1)+'%';
+  document.getElementById('finPctLbl').textContent   = finPct.toFixed(1)+'%';
+
+  document.getElementById('r-rough').textContent     = roughH.toFixed(2)+'h';
+  document.getElementById('r-rough-min').textContent = '('+fmtTime(roughH)+')';
+  document.getElementById('r-finish').textContent    = finH.toFixed(2)+'h';
+  document.getElementById('r-finish-min').textContent= '('+fmtTime(finH)+')';
+  document.getElementById('r-total').textContent     = totalCeil.toFixed(1)+'h';
+  document.getElementById('r-total-min').textContent = '('+fmtTime(totalCeil)+')';
+
+  const badge = document.getElementById('diffBadge');
+  if      (totalPct<30) { badge.className='diff-badge diff-easy'; badge.textContent='✓ 低除去率（加工しやすい）'; }
+  else if (totalPct<70) { badge.className='diff-badge diff-mid';  badge.textContent='△ 中除去率（標準的な加工）'; }
+  else                  { badge.className='diff-badge diff-hard'; badge.textContent='⚠ 高除去率（時間・コスト注意）'; }
+
+  const roughTagsHtml = cond.vc!==undefined
+    ? `<span class="ctag">切り込み <b>${cond.ap}mm</b></span><span class="ctag">周速 <b>${cond.vc}m/min</b></span><span class="ctag">送り <b>${cond.fr}mm/rev</b></span><span class="ctag">レート <b>${(roughRate/1000).toFixed(2)}cm³/min</b></span>`
+    : `<span class="ctag">切り込み <b>${cond.ap}mm</b></span><span class="ctag">切り込み幅 <b>${cond.ae?.toFixed(1)}mm</b></span><span class="ctag">送り <b>${cond.f}mm/min</b></span><span class="ctag">レート <b>${(roughRate/1000).toFixed(1)}cm³/min</b></span>`;
+  document.getElementById('roughTags').innerHTML = roughTagsHtml;
+  document.getElementById('finishTags').innerHTML = `
+    <span class="ctag">切り込み <b>${finAp}mm</b></span>
+    <span class="ctag">パス数 <b>${passes}パス</b></span>
+    <span class="ctag">レート <b>${(finRate/1000).toFixed(2)}cm³/min</b></span>`;
+  document.getElementById('condNote').innerHTML =
+    `※ ${materialLabel(mat)} / ${methodLabel(mth)} の標準切削条件を自動適用。段取り・工具交換・プログラム時間は含まれません。<br>
+     ※ 本ツールは概算ツールです。実際の加工時間は形状・設備・工具条件により大きく異なります。`;
+}
+</script>
+</body>
+</html>
